@@ -1,12 +1,5 @@
-#include "loadShader.h"
-#include <iostream>
-#include <cstdio>
-#include <cstdlib>
-#include <fstream>
-#include <vector>
-#include <glm/glm.hpp>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "gl_necessities.h"
+#include "load_shaders.h"
 
 // Background color
 #define GL_CLEAR_COLOR 0.f, 0.f, 0.f, 0.f
