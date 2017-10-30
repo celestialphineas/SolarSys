@@ -1,65 +1,51 @@
-#include "gl_necessities.h"
-#include "load_shaders.h"
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <GL/glut.h>
+#include "Planet.h"
 
-// Background color
-#define GL_CLEAR_COLOR 0.f, 0.f, 0.f, 0.f
 
-GLFWwindow *init_glfw();
-bool init_glew();
-void display(GLFWwindow*);
 
-void display(GLFWwindow *window) {
-    // Clear colored background
-    glClearColor(GL_CLEAR_COLOR);
-    // Here for creating objects and sessions
-    // ----
-    // Display main loop
-    while(!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+void redraw(void) {
+    // Background color
+    glClearColor(0.f, 0.f, 0.f, 0.f);
+    // Clear
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPushMatrix();
+        glTranslatef(0.f, 0.f, -2.f);
+        glutSolidSphere(0.5f, 32, 32);
+    glPopMatrix();
+    glutSwapBuffers();
+}
+
+void reshape(int width, int height) {
+    // Prevent the zero division
+    if(height == 0) {
+        height = 1;
     }
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    // Aspect Ratio
+    gluPerspective(45.f, (GLfloat)width/(GLfloat)height, 0.1f, 100.f);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    redraw();
 }
 
 int main(int argc, char **argv) {
-    // Initialize GLFW
-    GLFWwindow *window;
-    if(!(window = init_glfw())) {
-        std::cerr << "Failed to open GLFW window.\n";
-        try {glfwTerminate();} catch(int) {}
-        return -1;
-    }
-    // Initialize GLEW
-    if(!init_glew()) {
-        std::cerr << "Failed to initialize GLEW.\n";
-        try {glfwTerminate();} catch(int) {}
-        return -2;
-    }
-
-    display(window);
-    // Close OpenGL window and terminate GLFW
-    glfwTerminate();
-}
-
-// Initialize glfw
-GLFWwindow *init_glfw() {
-    // Initialize GLFW
-    if(!glfwInit()) return NULL;
-    glfwWindowHint(GLFW_SAMPLES, 4);    // 4xAA
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);  // OpenGL 3.3
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    // Open a window and create its OpenGL context
-    GLFWwindow *window = glfwCreateWindow(1024, 768, "Solar System",
-        NULL, NULL);
-    if(window) glfwMakeContextCurrent(window);
-    return window;
-}
-
-// Initialize glew
-// return 1 for success
-bool init_glew() {
-    glewExperimental = true;
-    return glewInit() == GLEW_OK;
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH);
+    glutInitWindowSize(1024, 768);
+    int glut_window = glutCreateWindow("Solar System");
+    // GLUT window display function
+    glutDisplayFunc(redraw);
+    // Window reshape function
+    glutReshapeFunc(reshape);
+    // 
+    glEnable(GL_DEPTH_TEST);
+    glutMainLoop();
+    return 0;
 }
