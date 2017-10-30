@@ -1,6 +1,11 @@
 #ifndef PLANET_H__
 #define PLANET_H__
 
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <GL/glut.h>
 #include <cmath>
 #define deg2rad(x)  ((x) * M_PI / 180.)
 
@@ -36,14 +41,14 @@ public:
             float orbit_epoch_offset_,
             float rotation_period_, float rotation_inclination_,
             float rotation_epoch_offset_):
-        parent(&parent_), body_radius(1.f),
-        semi_majoraxis(10.f), orbit_period(orbit_period_),
+        parent(&parent_), body_radius(body_radius_),
+        semi_majoraxis(semi_majoraxis_), orbit_period(orbit_period_),
         orbit_epoch_offset(orbit_epoch_offset_),
         rotation_period(rotation_period_), 
         rotation_inclination(rotation_inclination_), 
         rotation_epoch_offset(rotation_epoch_offset_) {
-            x = parent->x + cos(deg2rad(orbit_epoch_offset));
-            y = parent->y + sin(deg2rad(orbit_epoch_offset));
+            x = parent->x + semi_majoraxis*cos(deg2rad(orbit_epoch_offset));
+            y = parent->y + semi_majoraxis*sin(deg2rad(orbit_epoch_offset));
             z = 0.f;
             rotation_about_axis = rotation_epoch_offset;
     }
@@ -79,6 +84,7 @@ public:
     virtual float get_rotation() {return deg2rad(rotation_about_axis); }
 
     virtual void update(float time);
+    virtual void draw();
 };
 
 // Class of the sun
@@ -87,7 +93,7 @@ public:
 // AscendingNode   75.77
 // MeridianAngle   23.00  # standard meridian
 class Sol: public Planet {
-private:
+public:
     Planet *set_parent(Planet &parent_) { return this; }
     float set_body_radius(float radius_)
         { return 0.; }
@@ -103,12 +109,11 @@ private:
         { return rotation_inclination = rotation_inclination_; }
     float set_rotation_epoch_offset(float rotation_epoch_offset_)
         { return rotation_epoch_offset = rotation_epoch_offset_; }
-    void update(float time) {
-        rotation_about_axis = rotation_epoch_offset + time/orbit_period*360.;
+    void update(float time_) {
+        rotation_about_axis = rotation_epoch_offset + time_/orbit_period*360.;
     }
-public:
     Sol(float body_radius_):
-        Planet(*this, 1.f, 0.f, 1.f, 0.f, 609.12f, 7.25f,0.f) {
+        Planet(*this, body_radius_, 0.f, 1.f, 0.f, 609.12f, 7.25f,0.f) {
         x = 0.; y = 0.; z = 0.;
         rotation_about_axis = rotation_epoch_offset;
     }
