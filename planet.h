@@ -9,6 +9,7 @@
 #include <cmath>
 #include "texture_loader.h"
 #define deg2rad(x)  ((x) * M_PI / 180.)
+#define N_SEGMENTS  64
 
 class Planet {
 protected:
@@ -88,10 +89,11 @@ public:
     virtual float get_x() { return x; }
     virtual float get_y() { return y; }
     virtual float get_z() { return z; }
-    virtual float get_rotation() {return deg2rad(rotation_about_axis); }
+    virtual float get_rotation() {return rotation_about_axis; }
 
     virtual void update(float time);
     virtual void draw();
+    virtual void draw_orbit();
 };
 
 // Class of the sun
@@ -119,7 +121,7 @@ public:
     }
     void draw();
     Sol():
-        Planet(*this, 4.260f, 0.f, 1.f, 0.f, 609.12f, 7.25f,0.f) {
+        Planet(*this, 4.260f, 0.f, 1e20f, 0.f, 1e20f, 7.25f,0.f) {
         x = 0.; y = 0.; z = 0.;
         rotation_about_axis = rotation_epoch_offset;
     }
